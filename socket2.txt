@@ -7,31 +7,34 @@ port = 4444
 su = socket.socket(socket.AF_INET)
 su.bind((host,port))
 su.listen(1)
-connect,address = su.accept()
-print('Connected by',address)
+try:
+    connect,address = su.accept(time.sleep(60))
+    print('Connected by',address)
+except not address:
+    connect.close()
+    exit()
 
 def send():
     db = pymysql.connect(host='localhost',user='pi',passwd='1111',db='pot_db')
     cur = db.cursor()
     sql = 'SELECT light,dust,moisture,temperature FROM plant ORDER BY date DESC limit 1'
-    while True:
-        cur.execute(sql)
-        data = cur.fetchone()
-        connect.send('ok'+'/'+data[0]+'/'+data[1]+'/'+data[2]+'/'+data[3])
-    connect.close()
+    cur.execute(sql)
+    data = cur.fetchone()
+    connect.send('ok'+'/'+data[0]+'/'+data[1]+'/'+data[2]+'/'+data[3])
     db.close()
     
 def recv():
-    while True:
-        data = connect.recv(1024)
-        if not data:
-            break
-        else:
-            print(data)
-    connect.close()
+    data = connect.recv(1024)
+    if not data:
+        pass
+    else:
+        print(data)
     
 threading._start_new_thread(send,())
 threading._start_new_thread(recv,())
+
+connect.close()
+su.close()
 
 while True:
     pass

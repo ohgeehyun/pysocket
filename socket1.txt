@@ -2,37 +2,29 @@
 import socket
 import pymysql
 import threading
-while True:
     su = socket.socket(socket.AF_INET)
     host = '192.168.43.231'
     port = 4444
     su.bind((host,port))
     su.listen(1)
     connect, address = su.accept()
+    try
     def send():
-        while True:
-            db = pymysql.connect(host='localhost',user='pi',passwd='1111',db='pot_db')
-            cur = db.cursor()
-            sql = 'SELECT light,dust,moisture,temperature FROM plant ORDER BY date DESC limit 1'
-            try:
-                cur.execute(sql)
-                data = cur.fetchone()
-                connect.send('ok'+'/'+data[0]+'/'+data[1]+'/'+data[2]+'/'+data[3])
-            except:
-                db.close()
-                connect.close()
-                su.close()
-                break
+	db = pymysql.connect(host='localhost',user='pi',passwd='1111',db='pot_db')
+        cur = db.cursor()
+        sql = 'SELECT light,dust,moisture,temperature FROM plant ORDER BY date DESC limit 1'
+        cur.execute(sql)
+        data = cur.fetchone()
+        connect.send('ok'+'/'+data[0]+'/'+data[1]+'/'+data[2]+'/'+data[3])
+        db.close()
+        connect.close()
+        su.close()
                 
     def recv():
-        while True:
-            try:
-                data = connect.recv(1024)
-                print(data)
-            except:
-                connect.close()
-                su.close()
-                break
-                
+        data = connect.recv(1024)
+        print(data)
+        connect.close()
+        su.close()
+              
     threading._start_new_thread(send,())
     threading._start_new_thread(recv,())
