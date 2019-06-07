@@ -10,8 +10,8 @@ while True:
         ser = serial.Serial("/dev/ttyUSB0",115200)
         ser.readline()
         data = str(ser.readline())
-        sql = 'INSERT INTO plant values(%s,%s,%s,%s,%s,%s)'
-        cur.execute(sql,(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()),data.split('/')[0],data.split('/')[1],data.split('/')[2],data.split('/')[3],data.split('/')[4].strip()))
+        sql = 'INSERT INTO plant values(%s,%s,%s,%s,%s)'
+        cur.execute(sql,(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()),data.split('/')[1],data.split('/')[2],data.split('/')[3],data.split('/')[4].strip()))
         db.commit()
         time.sleep(1)
     except:
